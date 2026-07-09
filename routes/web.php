@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get( '/report', [ ReportController::class, 'show' ] )->name( 'report' );
+Route::get( '/data', [ ReportController::class, 'data' ] )->name( 'data' );
 Route::get( '/docs/13.x/{page}', [ DocsController::class, 'show' ] )->where( 'page', '[a-z0-9\-]+' )->name( 'docs' );
 
 Route::fallback( fn() => redirect( '/docs/13.x/installation' ) );

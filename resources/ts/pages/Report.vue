@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { Head } from '@inertiajs/vue3';
 import Header from '@/components/Header.vue';
 
@@ -32,8 +32,12 @@ interface ReportProps
 	available : boolean;
 	totals : BucketCounts;
 	perPageRows : PerPageRow[];
-	results : SnippetResult[];
 	buckets : Bucket[];
+}
+
+interface ReportData
+{
+	results : SnippetResult[];
 	inputs : Record<string, string[]>;
 }
 
@@ -77,7 +81,19 @@ const bucketPillClass: Record<Bucket, string> = {
 const props = defineProps<ReportProps>();
 
 
-const total = computed( () => props.results.length );
+const results = ref<SnippetResult[]>( [] );
+const inputs = ref<Record<string, string[]>>( {} );
+const loading = ref( false );
+
+const selectedBucket = ref<'all' | Bucket>( 'all' );
+const page = ref<'all' | string>( 'all' );
+const text = ref( '' );
+const sortKey = ref<SortKey>( 'page' );
+const sortDir = ref<'asc' | 'desc'>( 'asc' );
+const expanded = ref( new Set<string>() );
+
+
+const total = computed( () => props.buckets.reduce( ( sum, bucket ) => sum + ( props.totals[ bucket ] ?? 0 ), 0 ) );
 
 const visibleResults = computed(() => filteredResults.value.slice( 0, maxRows ) );
 
@@ -104,7 +120,7 @@ const filteredResults = computed( () =>
 {
 	const lowerText = text.value.toLowerCase();
 
-	return props.results.filter( result =>
+	return results.value.filter( result =>
 	{
 		if( selectedBucket.value !== 'all' && result.bucket !== selectedBucket.value ) return false;
 		if( page.value !== 'all' && result.page !== page.value ) return false;
@@ -123,18 +139,10 @@ const filteredResults = computed( () =>
 
 
 
-const selectedBucket = ref<'all' | Bucket>( 'all' );
-const page = ref<'all' | string>( 'all' );
-const text = ref( '' );
-const sortKey = ref<SortKey>( 'page' );
-const sortDir = ref<'asc' | 'desc'>( 'asc' );
-const expanded = ref( new Set<string>() );
-
-
 
 function getInput( prop : string, index : number ) : string
 {
-	const array = props.inputs[ prop ];
+	const array = inputs.value[ prop ];
 
 	if( ! array || index >= array.length ) return '';
 
@@ -180,6 +188,7 @@ function setSort( key : SortKey ) : void
 	else
 	{
 		sortKey.value = key;
+
 		sortDir.value = key === 'page' ? 'asc' : 'desc';
 	}
 }
@@ -259,6 +268,31 @@ function percentage( value : number ) : string
 	return ( ( value / total.value ) * 100 ).toFixed( 1 ) + '%';
 }
 
+
+onMounted( async () =>
+{
+	if( ! props.available ) return;
+
+	loading.value = true;
+
+	try
+	{
+		const response = await fetch( 'data' );
+
+		if( ! response.ok ) throw new Error( `data: HTTP ${response.status}` );
+
+		const data : ReportData = await response.json();
+
+		results.value = data.results ?? [];
+
+		inputs.value = data.inputs ?? {};
+	}
+	finally
+	{
+		loading.value = false;
+	}
+} );
+
 </script>
 
 <template>
@@ -278,6 +312,7 @@ function percentage( value : number ) : string
 					<p class="m-0 font-semibold">No sweep results yet.</p>
 
 					<p class="m-0 mt-1">
+
 						Run the Playwright sweep and then
 
 						<code class="rounded bg-[rgba(120,120,120,0.18)] px-1 text-[13px]">php artisan report:merge</code> to populate
@@ -426,7 +461,13 @@ function percentage( value : number ) : string
 
 						</div>
 
-						<div class="py-1.5 text-[13px] text-report-text-muted">Showing {{ filteredResults.length.toLocaleString() }} of {{ total.toLocaleString() }} snippets</div>
+						<div class="py-1.5 text-[13px] text-report-text-muted">
+
+							<template v-if="loading">Loading snippet results…</template>
+
+							<template v-else>Showing {{ filteredResults.length.toLocaleString() }} of {{ total.toLocaleString() }} snippets</template>
+
+						</div>
 
 						<div class="overflow-x-auto rounded-lg border border-report-border bg-report-bg">
 

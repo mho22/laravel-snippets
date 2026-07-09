@@ -36,6 +36,19 @@ final class PageDeployCommand extends Command
 		</html>
 		HTML;
 
+	private const FALLBACK_REDIRECT_HTML = <<<'HTML'
+		<!DOCTYPE html>
+		<html lang="en">
+		<head>
+			<meta charset="utf-8">
+			<title>Laravel 13.x docs (snippets)</title>
+			<script>location.replace("/laravel-snippets/docs/13.x/installation/");</script>
+			<meta http-equiv="refresh" content="0; url=/laravel-snippets/docs/13.x/installation/">
+		</head>
+		<body></body>
+		</html>
+		HTML;
+
 
 	public function handle() : int
 	{
@@ -72,6 +85,10 @@ final class PageDeployCommand extends Command
 
 		File::put( "{$dist}/report.html", $html );
 
+		$this->info( '[ page-deploy ] writing report data' );
+
+		File::put( "{$dist}/data", $this->render( '/data' ) );
+
 		$this->info( '[ page-deploy ] enumerating docs pages' );
 
 		$slugs = collect( File::files( resource_path( 'markdown/13.x' ) ) )
@@ -99,6 +116,10 @@ final class PageDeployCommand extends Command
 		$this->info( '[ page-deploy ] writing root redirect' );
 
 		File::put( "{$dist}/index.html", self::ROOT_REDIRECT_HTML . "\n" );
+
+		$this->info( '[ page-deploy ] writing 404 fallback redirect' );
+
+		File::put( "{$dist}/404.html", self::FALLBACK_REDIRECT_HTML . "\n" );
 
 		$this->info( '[ page-deploy ] copying public assets' );
 

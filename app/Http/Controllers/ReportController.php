@@ -4,6 +4,7 @@ declare( strict_types = 1 );
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\File;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -16,7 +17,6 @@ final class ReportController
 		$base = base_path( 'tests' );
 		$reportJson = $base . '/report.json';
 		$resultsDir = $base . '/results';
-		$markdownDir = resource_path( 'markdown/13.x' );
 
 		if( ! File::exists( $reportJson ) && ! File::isDirectory( $resultsDir ) )
 		{
@@ -24,22 +24,34 @@ final class ReportController
 				'available' => false,
 				'totals' => [],
 				'perPageRows' => [],
-				'results' => [],
-				'buckets' => $this->buckets(),
-				'inputs' => []
+				'buckets' => $this->buckets()
 			] );
 		}
 
 		$results = $this->loadResults( $reportJson, $resultsDir );
-		$inputs = $this->loadInputs( $markdownDir );
 
 		return Inertia::render( 'Report', [
 			'available' => true,
 			'totals' => $this->totals( $results ),
 			'perPageRows' => $this->perPageRows( $results ),
-			'results' => $results,
-			'buckets' => $this->buckets(),
-			'inputs' => $inputs
+			'buckets' => $this->buckets()
+		] );
+	}
+
+	public function data() : JsonResponse
+	{
+		$base = base_path( 'tests' );
+		$reportJson = $base . '/report.json';
+		$resultsDir = $base . '/results';
+
+		if( ! File::exists( $reportJson ) && ! File::isDirectory( $resultsDir ) )
+		{
+			return response()->json( [ 'results' => [], 'inputs' => [] ] );
+		}
+
+		return response()->json( [
+			'results' => $this->loadResults( $reportJson, $resultsDir ),
+			'inputs' => $this->loadInputs( resource_path( 'markdown/13.x' ) )
 		] );
 	}
 
