@@ -1,0 +1,46 @@
+{
+	"name" : "capsulescodes/laravel-snippets-bundle",
+	"type" : "project",
+	"description" : "Laravel runtime bundle unzipped into the browser PHP-WASM worker",
+	"keywords" : [ "laravel", "snippet", "bundle" ],
+	"license" : "MIT",
+	"require" : {
+		"php" : "^8.3",
+		"fakerphp/faker" : "^1.24",
+		"laravel/ai" : "^0.8",
+		"laravel/cashier" : "^16.0",
+		"laravel/folio" : "^1.1",
+		"laravel/framework" : "^13.8",
+		"laravel/mcp" : "^0.8",
+		"laravel/pennant" : "^1.0",
+		"laravel/prompts" : "^0.3"
+	},
+	"autoload" : {
+		"psr-4" : {
+			"App\\" : "app/",
+			"Database\\Factories\\" : "database/factories/",
+			"Database\\Seeders\\" : "database/seeders/",
+			"PHPUnit\\Framework\\" : "stubs/PHPUnit/Framework/",
+			"Tests\\" : "stubs/Tests/"
+		}
+	},
+	"scripts" : {
+		"post-autoload-dump" : [
+			"Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+			"@php artisan package:discover --ansi"
+		],
+		"pre-package-uninstall" : [
+			"Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
+		]
+	},
+	"config" : {
+		"optimize-autoloader" : true,
+		"preferred-install" : "dist",
+		"sort-packages" : true,
+		"allow-plugins" : {
+			"php-http/discovery" : true
+		}
+	},
+	"minimum-stability" : "stable",
+	"prefer-stable" : true
+}

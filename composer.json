@@ -1,0 +1,63 @@
+{
+	"name" : "capsulescodes/laravel-snippets",
+	"type" : "project",
+	"description" : "Laravel documentation with snippets",
+	"keywords" : [ "laravel", "framework", "documentation", "snippet" ],
+	"license" : "MIT",
+	"require" : {
+		"php" : "^8.5",
+		"inertiajs/inertia-laravel" : "^3.1.1",
+		"laravel/framework" : "^13.19.0",
+		"league/commonmark" : "^2.8.2"
+	},
+	"require-dev" : {
+		"laravel/pail" : "^1.2.7",
+		"laravel/tinker" : "^3.0.2",
+		"nunomaduro/collision" : "^8.9.4"
+	},
+	"autoload" : {
+		"psr-4" : {
+			"App\\" : "app/"
+		}
+	},
+	"scripts" : {
+		"setup" : [
+			"composer install",
+			"@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
+			"@php artisan key:generate",
+			"npm install --ignore-scripts",
+			"@build"
+		],
+		"dev" : [
+			"Composer\\Config::disableProcessTimeout",
+			"@php artisan sync:assets",
+			"@php artisan bundle:build",
+			"@build-worker",
+			"npx concurrently -c \"#93c5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan pail --timeout=0\" \"npx vite\" --names=server,logs,vite --kill-others"
+		],
+		"build" : [
+			"Composer\\Config::disableProcessTimeout",
+			"@php artisan sync:assets",
+			"@php artisan bundle:build",
+			"@build-worker",
+			"npx vite build"
+		],
+		"build-worker" : [
+			"npx vite build -c vite.worker.config.ts"
+		],
+		"test" : [
+			"Composer\\Config::disableProcessTimeout",
+			"@putenv SWEEP=1",
+			"@build",
+			"npx playwright test || true",
+			"@php artisan report:merge"
+		],
+		"post-autoload-dump" : [
+			"Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+			"@php artisan package:discover --ansi"
+		],
+		"pre-package-uninstall" : [
+			"Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
+		]
+	}
+}

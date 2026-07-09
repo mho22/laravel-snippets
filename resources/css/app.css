@@ -1,0 +1,110 @@
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities) source(none);
+
+@source '../ts';
+@source '../views';
+@source '../../app/Renderers';
+
+@custom-variant dark ( &:where( .dark, .dark * ) );
+
+@theme
+{
+	--font-sans : 'InstrumentSans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+@layer base
+{
+	:root
+	{
+		--report-bg : #ffffff;
+		--report-bg-elevated : #f9fafb;
+		--report-bg-hover : #f3f4f6;
+		--report-border : #e5e7eb;
+		--report-text : #111827;
+		--report-text-muted : #6b7280;
+		--report-text-strong : #111827;
+		--report-accent : #2563eb;
+		--report-ok : #047857;
+		--report-warn : #b45309;
+		--report-fail : #b91c1c;
+		--report-muted : #6b7280;
+		--report-pre-bg : #0a0d12;
+		--report-pre-text : #cfd5e1;
+		--report-pill-ok-bg : rgba( 16, 185, 129, 0.12 );
+		--report-pill-ok-text : #047857;
+		--report-pill-warn-bg : rgba( 245, 158, 11, 0.15 );
+		--report-pill-warn-text : #92400e;
+		--report-pill-fail-bg : rgba( 239, 68, 68, 0.12 );
+		--report-pill-fail-text : #991b1b;
+		--report-pill-fail-strong-bg : rgba( 239, 68, 68, 0.22 );
+		--report-pill-fail-strong-text : #7f1d1d;
+		--report-pill-muted-bg : rgba( 107, 114, 128, 0.15 );
+		--report-pill-muted-text : #4b5563;
+	}
+
+	.dark
+	{
+		--report-bg : #161a22;
+		--report-bg-elevated : #1d222d;
+		--report-bg-hover : #232936;
+		--report-border : #262c38;
+		--report-text : #e6e9ef;
+		--report-text-muted : #8a93a6;
+		--report-text-strong : #f1f5f9;
+		--report-accent : #6ea8fe;
+		--report-ok : #4ade80;
+		--report-warn : #facc15;
+		--report-fail : #f87171;
+		--report-muted : #8a93a6;
+		--report-pill-ok-bg : rgba( 74, 222, 128, 0.15 );
+		--report-pill-ok-text : #4ade80;
+		--report-pill-warn-bg : rgba( 250, 204, 21, 0.18 );
+		--report-pill-warn-text : #facc15;
+		--report-pill-fail-bg : rgba( 248, 113, 113, 0.18 );
+		--report-pill-fail-text : #f87171;
+		--report-pill-fail-strong-bg : rgba( 248, 113, 113, 0.3 );
+		--report-pill-fail-strong-text : #fecaca;
+		--report-pill-muted-bg : rgba( 138, 147, 166, 0.18 );
+		--report-pill-muted-text : #cbd5e1;
+	}
+}
+
+@theme inline
+{
+	--color-report-bg : var( --report-bg );
+	--color-report-bg-elevated : var( --report-bg-elevated );
+	--color-report-bg-hover : var( --report-bg-hover );
+	--color-report-border : var( --report-border );
+	--color-report-text : var( --report-text );
+	--color-report-text-muted : var( --report-text-muted );
+	--color-report-text-strong : var( --report-text-strong );
+	--color-report-accent : var( --report-accent );
+	--color-report-ok : var( --report-ok );
+	--color-report-warn : var( --report-warn );
+	--color-report-fail : var( --report-fail );
+	--color-report-muted : var( --report-muted );
+	--color-report-pre-bg : var( --report-pre-bg );
+	--color-report-pre-text : var( --report-pre-text );
+	--color-report-pill-ok-bg : var( --report-pill-ok-bg );
+	--color-report-pill-ok-text : var( --report-pill-ok-text );
+	--color-report-pill-warn-bg : var( --report-pill-warn-bg );
+	--color-report-pill-warn-text : var( --report-pill-warn-text );
+	--color-report-pill-fail-bg : var( --report-pill-fail-bg );
+	--color-report-pill-fail-text : var( --report-pill-fail-text );
+	--color-report-pill-fail-strong-bg : var( --report-pill-fail-strong-bg );
+	--color-report-pill-fail-strong-text : var( --report-pill-fail-strong-text );
+	--color-report-pill-muted-bg : var( --report-pill-muted-bg );
+	--color-report-pill-muted-text : var( --report-pill-muted-text );
+}
+
+.contains-code-blocks > .code-block-wrapper pre::before
+{
+	inset : calc( var( --spacing ) * 0.5 );
+	border-radius : var( --radius-sm );
+}
+
+.contains-code-blocks > .code-block-wrapper pre code
+{
+	padding-inline : calc( var( --spacing ) * 5.25 );
+	padding-block : calc( var( --spacing ) * 6.25 );
+}
